@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final _message = [
     'Greetings!!',
-    'My name is Evan',
+    'My name is Eva',
     'I come from Mars',
     'I\'ve come in peace',
   ];
