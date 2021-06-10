@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NewTransaction extends StatefulWidget {
   //need to convert to stateful widget for entry to persist
@@ -11,19 +12,39 @@ class NewTransaction extends StatefulWidget {
 }
 
 class _NewTransactionState extends State<NewTransaction> {
-  final titleController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
+  DateTime _selectedDate;
 
-  final amountController = TextEditingController();
+  void _submitData() {
+    if (_amountController.text.isEmpty) return; //prevent double.parse failure
+    final enteredTitle = _titleController.text;
+    final enteredAmount = double.parse(_amountController.text);
 
-  void submitData() {
-    final enteredTitle = titleController.text;
-    final enteredAmount = double.parse(amountController.text);
-
-    if (enteredTitle.isEmpty || enteredAmount <= 0) return;
-    widget.addTx(enteredTitle,
-        enteredAmount); // added by refractoring link state to widget
+    if (enteredTitle.isEmpty || enteredAmount <= 0 || _selectedDate == null)
+      return;
+    widget.addTx(enteredTitle, enteredAmount,
+        _selectedDate); // added by refractoring link state to widget
 
     Navigator.of(context).pop();
+  }
+
+  void _presentDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2021),
+      lastDate: DateTime.now(),
+    ).then(
+      (pickedDate) {
+        if (pickedDate == null) {
+          return;
+        }
+        setState(() {
+          _selectedDate = pickedDate;
+        });
+      },
+    );
   }
 
   @override
@@ -36,27 +57,50 @@ class _NewTransactionState extends State<NewTransaction> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             TextField(
-              controller: titleController,
+              controller: _titleController,
               decoration: InputDecoration(
                 labelText: 'Title',
               ),
               onSubmitted: (_) =>
-                  submitData(), //reference to anonymous function which submitData() is required to trigger our function
+                  _submitData(), //reference to anonymous function which _submitData() is required to trigger our function
             ),
             TextField(
               keyboardType: TextInputType.number,
-              controller: amountController,
+              controller: _amountController,
               onSubmitted: (_) =>
-                  submitData(), // underscore to take an argument but will not use it in function
+                  _submitData(), // underscore to take an argument but will not use it in function
               decoration: InputDecoration(
                 labelText: 'Amount',
               ),
             ),
-            FlatButton(
-              textColor: Colors.purple,
-              onPressed: submitData, //reference to our own function
+            Container(
+              height: 70.0,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text((_selectedDate == null)
+                        ? 'No Date Chosen!'
+                        : 'Picked Date : ${DateFormat.yMd().format(_selectedDate)}'),
+                  ),
+                  FlatButton(
+                    onPressed: _presentDatePicker,
+                    child: Text(
+                      'Choose Date',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    textColor: Theme.of(context).primaryColor,
+                  )
+                ],
+              ),
+            ),
+            RaisedButton(
+              textColor: Theme.of(context).textTheme.button.color,
+              onPressed: _submitData, //reference to our own function
               child: Text('Add Transaction'),
-            )
+              color: Theme.of(context).primaryColor,
+            ),
           ],
         ),
       ),
