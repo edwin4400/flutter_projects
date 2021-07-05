@@ -49,59 +49,67 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: Container(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(
-                labelText: 'Title',
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 5,
+        child: Container(
+          padding: EdgeInsets.only(
+            top: 10,
+            left: 10,
+            right: 10,
+            bottom: MediaQuery.of(context).viewInsets.bottom +
+                10, // help to push up modalsheet when keyboard pops up
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              TextField(
+                controller: _titleController,
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                ),
+                onSubmitted: (_) =>
+                    _submitData(), //reference to anonymous function which _submitData() is required to trigger our function
               ),
-              onSubmitted: (_) =>
-                  _submitData(), //reference to anonymous function which _submitData() is required to trigger our function
-            ),
-            TextField(
-              keyboardType: TextInputType.number,
-              controller: _amountController,
-              onSubmitted: (_) =>
-                  _submitData(), // underscore to take an argument but will not use it in function
-              decoration: InputDecoration(
-                labelText: 'Amount',
+              TextField(
+                keyboardType: TextInputType.number,
+                controller: _amountController,
+                onSubmitted: (_) =>
+                    _submitData(), // underscore to take an argument but will not use it in function
+                decoration: InputDecoration(
+                  labelText: 'Amount',
+                ),
               ),
-            ),
-            Container(
-              height: 70.0,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text((_selectedDate == null)
-                        ? 'No Date Chosen!'
-                        : 'Picked Date : ${DateFormat.yMd().format(_selectedDate)}'),
-                  ),
-                  FlatButton(
-                    onPressed: _presentDatePicker,
-                    child: Text(
-                      'Choose Date',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+              Container(
+                height: 70.0,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text((_selectedDate == null)
+                          ? 'No Date Chosen!'
+                          : 'Picked Date : ${DateFormat.yMd().format(_selectedDate)}'),
                     ),
-                    textColor: Theme.of(context).primaryColor,
-                  )
-                ],
+                    FlatButton(
+                      onPressed: _presentDatePicker,
+                      child: Text(
+                        'Choose Date',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      textColor: Theme.of(context).primaryColor,
+                    )
+                  ],
+                ),
               ),
-            ),
-            RaisedButton(
-              textColor: Theme.of(context).textTheme.button.color,
-              onPressed: _submitData, //reference to our own function
-              child: Text('Add Transaction'),
-              color: Theme.of(context).primaryColor,
-            ),
-          ],
+              RaisedButton(
+                textColor: Theme.of(context).textTheme.button.color,
+                onPressed: _submitData, //reference to our own function
+                child: Text('Add Transaction'),
+                color: Theme.of(context).primaryColor,
+              ),
+            ],
+          ),
         ),
       ),
     );
